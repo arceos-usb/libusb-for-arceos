@@ -71,8 +71,21 @@ AC_DEFINE([PRINTF_FORMAT(a, b)], [__attribute__ ((__format__ (__printf__, a, b))
 
 create_import_lib=
 is_android_linux=
+
+
+
 AC_MSG_CHECKING([operating system])
 case $host in
+*-arceos*)
+  	AC_MSG_RESULT([Arceos])
+  	backend=arceos
+  	platform=posix
+	;;
+*-darwin*)
+	AC_MSG_RESULT([ArceOS])
+	backend=arceos
+	platform=posix
+	;;
 *-darwin*)
 	AC_MSG_RESULT([Darwin/Mac OS X])
 	backend=darwin
@@ -190,6 +203,11 @@ else
 fi
 
 case $backend in
+arceos)
+    AC_DEFINE([HAVE_ARCEOS], [1], [Defined if compiling on ArceOS])
+    CFLAGS="$CFLAGS -DARCEOS -march=aarch64"
+    LDFLAGS="$LDFLAGS -L/path/to/arceos/libs"
+	;;
 darwin)
 	AC_CHECK_FUNCS([pthread_threadid_np])
 	LIBS="${LIBS} -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security"
@@ -387,6 +405,7 @@ AM_CONDITIONAL([BUILD_UMOCKDEV_TEST], [test "x$ac_have_umockdev" = xyes -a "x$lo
 AM_CONDITIONAL([CREATE_IMPORT_LIB], [test "x$create_import_lib" = xyes])
 AM_CONDITIONAL([OS_DARWIN], [test "x$backend" = xdarwin])
 AM_CONDITIONAL([OS_HAIKU], [test "x$backend" = xhaiku])
+AM_CONDITIONAL([OS_ARCEOS], [test "x$backend" = xarceos])
 AM_CONDITIONAL([OS_LINUX], [test "x$backend" = xlinux])
 AM_CONDITIONAL([OS_NETBSD], [test "x$backend" = xnetbsd])
 AM_CONDITIONAL([OS_NULL], [test "x$backend" = xnull])

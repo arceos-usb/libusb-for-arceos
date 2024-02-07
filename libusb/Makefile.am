@@ -51,6 +51,16 @@ OS_SRC += os/linux_netlink.c
 endif
 endif
 
+if OS_ARCEOS 
+# TODO: fill it
+lib_LTLIBRARIES = libusb_arceos.la
+noinst_LTLIBRARIES =
+libusb_arceos_la_SOURCES = \
+  os/arceos/arceos_usb.rs #TODO modify path
+AM_LDFLAGS = -L/path/to/rust/lib -lrust
+AM_CPPFLAGS = -I/path/to/arceos/include
+endif
+
 if OS_EMSCRIPTEN
 noinst_LTLIBRARIES += libusb_emscripten.la
 libusb_emscripten_la_SOURCES = $(OS_EMSCRIPTEN_SRC)
