@@ -38,6 +38,18 @@ LT_LDFLAGS="-version-info ${lt_current}:${lt_revision}:${lt_age} -no-undefined"
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
+AC_CHECK_PROG([RUSTC], [rustc], [yes], [no])
+AC_CHECK_PROG([CARGO], [cargo], [yes], [no])
+if test "x$RUSTC" = "xyes" && test "x$CARGO" = "xyes"; then
+    AC_MSG_NOTICE([Found Rust compiler and Cargo.])
+else
+    AC_MSG_ERROR([Could not find Rust compiler or Cargo, which are required for building the Rust components.])
+fi
+RUST_LIB_DIR="../"
+AC_SUBST([RUST_LIB_DIR])
+
+
+
 EXTRA_CPPFLAGS=
 EXTRA_CFLAGS=
 
@@ -78,13 +90,9 @@ AC_MSG_CHECKING([operating system])
 case $host in
 *-arceos*)
   	AC_MSG_RESULT([Arceos])
+	AM_CONDITIONAL([BUILD_WITH_RUST], [test "x$RUSTC" = "xyes" && test "x$CARGO" = "xyes"])
   	backend=arceos
   	platform=posix
-	;;
-*-darwin*)
-	AC_MSG_RESULT([ArceOS])
-	backend=arceos
-	platform=posix
 	;;
 *-darwin*)
 	AC_MSG_RESULT([Darwin/Mac OS X])
@@ -206,7 +214,8 @@ case $backend in
 arceos)
     AC_DEFINE([HAVE_ARCEOS], [1], [Defined if compiling on ArceOS])
     CFLAGS="$CFLAGS -DARCEOS -march=aarch64"
-    LDFLAGS="$LDFLAGS -L/path/to/arceos/libs"
+	# 可能还需要设置特定的编译和链接标志
+    # LDFLAGS="$LDFLAGS -L/path/to/arceos/libs" 
 	;;
 darwin)
 	AC_CHECK_FUNCS([pthread_threadid_np])

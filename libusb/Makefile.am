@@ -51,14 +51,16 @@ OS_SRC += os/linux_netlink.c
 endif
 endif
 
-if OS_ARCEOS 
-# TODO: fill it
-lib_LTLIBRARIES = libusb_arceos.la
+if OS_ARCEOS
+lib_LTLIBRARIES = libusb-1.0.la
 noinst_LTLIBRARIES =
-libusb_arceos_la_SOURCES = \
-  os/arceos/arceos_usb.rs #TODO modify path
-AM_LDFLAGS = -L/path/to/rust/lib -lrust
-AM_CPPFLAGS = -I/path/to/arceos/include
+# 假设您已经有一个构建脚本或 Makefile 来编译 Rust 代码，并且它会生成一个库文件（例如 libarceos_usb.a）
+RUST_LIB_NAME = libarceos_usb.a
+RUST_LIB_PATH = $(top_builddir)/path/to/rust/target/release
+RUST_INCLUDE_PATH = $(top_builddir)/path/to/rust/include
+libusb_1_0_la_LIBADD = $(RUST_LIB_PATH)/$(RUST_LIB_NAME)
+AM_LDFLAGS += -L$(RUST_LIB_PATH) -larceos_usb
+AM_CPPFLAGS += -I$(RUST_INCLUDE_PATH)
 endif
 
 if OS_EMSCRIPTEN
